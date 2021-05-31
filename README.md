@@ -11,6 +11,7 @@ Features
 - Set objects to automatically re-appear after a delay to boost engagement
 - Unlock access to activities based on the objects found (requires plugin [availability_stash](https://moodle.org/plugins/availability_stash))
 - Trade by exchanging items for different items (requires plugin [filter plugin](https://moodle.org/plugins/filter_stash))
+- Create 'stealable' items
 
 Requirements
 ------------
