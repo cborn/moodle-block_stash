@@ -32,6 +32,8 @@ if (!$dropid) {
 }
 $itemid = optional_param('itemid', 0, PARAM_INT);
 $returntype = optional_param('returntype', null, PARAM_ALPHA);
+$stealable = optional_param('stealable', null, PARAM_INT);
+$laststeal = optional_param('laststeal', time(), PARAM_INT);
 
 require_login($courseid);
 
@@ -48,7 +50,7 @@ $pagetitle = $drop ? get_string('editdrop', 'block_stash', $drop->get_name()) : 
 list($title, $subtitle, $returnurl) = \block_stash\page_helper::setup_for_drop($url, $manager, $drop, $pagetitle, $returntype);
 
 $item = $itemid ? $manager->get_item($itemid) : ($drop ? $manager->get_item($drop->get_itemid()) : null);
-$form = new \block_stash\form\drop($url->out(false), ['persistent' => $drop, 'item' => $item, 'manager' => $manager]);
+$form = new \block_stash\form\drop($url->out(false), ['persistent' => $drop, 'item' => $item, 'manager' => $manager, 'stealable' => $stealable, 'laststeal' => $laststeal]);
 if ($data = $form->get_data()) {
 
     $saveandnext = !empty($data->saveandnext);

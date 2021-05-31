@@ -357,7 +357,37 @@ function xmldb_block_stash_upgrade($oldversion) {
         upgrade_block_savepoint(true, 2018050806, 'stash');
     }
 
-    if ($oldversion < 2019040700) {
+
+    if ($oldversion < 2019070800) {
+        //define field to store new item attribute 'stealable'
+        $table = new xmldb_table('block_stash_drops');
+        $field = new xmldb_field('stealable', XMLDB_TYPE_INTEGER, '1', null, XMLDB_NOTNULL, null, '0','timemodified');
+
+        // Conditionally launch add field stealable.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Stash savepoint reached.
+        upgrade_block_savepoint(true, 2019070800, 'stash');
+
+    }
+
+    if ($oldversion < 2019071300) {
+        //define field to store new item attribute 'stealable'
+        $table = new xmldb_table('block_stash_drops');
+        $field = new xmldb_field('laststeal', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0','stealable');
+
+        // Conditionally launch add field stealable.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Stash savepoint reached.
+        upgrade_block_savepoint(true, 2019071300, 'stash');
+
+    }
+    if ($oldversion < 2020073101) {
 
         // Define field amountlimit to be added to block_stash_items.
         $table = new xmldb_table('block_stash_items');
@@ -368,12 +398,6 @@ function xmldb_block_stash_upgrade($oldversion) {
             $dbman->add_field($table, $field);
         }
 
-        // Stash savepoint reached.
-        upgrade_block_savepoint(true, 2019040700, 'stash');
-    }
-
-    if ($oldversion < 2019040701) {
-
         // Define field currentamount to be added to block_stash_items.
         $table = new xmldb_table('block_stash_items');
         $field = new xmldb_field('currentamount', XMLDB_TYPE_INTEGER, '10', null, null, null, null, 'amountlimit');
@@ -383,12 +407,6 @@ function xmldb_block_stash_upgrade($oldversion) {
             $dbman->add_field($table, $field);
         }
 
-        // Stash savepoint reached.
-        upgrade_block_savepoint(true, 2019040701, 'stash');
-    }
-
-    if ($oldversion < 2019112804) {
-
         $parentcontextids = $DB->get_records('block_instances', ['blockname' => 'stash'], '','parentcontextid');
         $roles = get_archetype_roles('teacher');
         foreach ($roles as $role) {
@@ -396,9 +414,9 @@ function xmldb_block_stash_upgrade($oldversion) {
                 assign_capability('block/stash:view', CAP_ALLOW, $role->id, $contextid->parentcontextid, $overwrite = false);
             }
         }
-
-        upgrade_block_savepoint(true, 2019112804, 'stash');
+        // Stash savepoint reached.
+        upgrade_block_savepoint(true, 2020073101, 'stash');
     }
-
     return true;
+
 }

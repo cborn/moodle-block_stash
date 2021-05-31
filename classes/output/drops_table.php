@@ -71,14 +71,18 @@ class drops_table extends table_sql {
             'itemname',
             'maxpickup',
             'pickupinterval',
-            'actions'
+            'actions',
+            'is_stealable',
+            'last_steal'
         ));
         $this->define_headers(array(
             get_string('dropname', 'block_stash'),
             get_string('itemname', 'block_stash'),
             get_string('maxpickup', 'block_stash'),
             get_string('pickupinterval', 'block_stash'),
-            get_string('actions')
+            get_string('actions'),
+            get_string('is_stealable', 'block_stash'),
+            get_string('last_steal', 'block_stash')
         ));
 
         // Define SQL.

@@ -87,6 +87,12 @@ class drop extends persistent {
         $mform->addRule('name', get_string('maximumchars', '', 100), 'maxlength', 100, 'client');
         $mform->addHelpButton('name', 'dropname', 'block_stash');
 
+        // Stealable
+        // Allows students to steal an item from each other
+        $mform->addElement('advcheckbox', 'stealable', get_string('stealable', 'block_stash'));
+        $mform->setType('stealable', PARAM_INT);
+        $mform->addHelpButton('stealable','stealable','block_stash');
+
         // Max pickup.
         $mform->addElement('block_stash_integer', 'maxpickup', get_string('maxpickup', 'block_stash'), ['style' => 'width: 4em;']);
         $mform->setType('maxpickup', PARAM_INT);
@@ -96,6 +102,11 @@ class drop extends persistent {
         $mform->addElement('duration', 'pickupinterval', get_string('pickupinterval', 'block_stash'));
         $mform->setType('pickupinterval', PARAM_INT);
         $mform->addHelpButton('pickupinterval', 'pickupinterval', 'block_stash');
+
+        // Last steal date/time, default entry is now
+        $mform->addElement('hidden', 'laststeal');
+        $mform->setType('laststeal', PARAM_INT);
+        $mform->setConstant('laststeal', time());
 
         // Buttons.
         $buttonarray = [];

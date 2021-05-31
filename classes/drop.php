@@ -67,6 +67,14 @@ class drop extends persistent {
                 'default' => function() {
                     return random_string(6);
                 }
+            ],
+            'stealable' => [
+                'type'=> PARAM_INT,
+                'default'=> 0
+            ],
+            'laststeal' => [
+                'type' => PARAM_INT,
+                'default' => time()
             ]
         ];
     }
@@ -83,10 +91,12 @@ class drop extends persistent {
     public function can_pickup(drop_pickup $dp) {
         $maxpickup = $this->get_maxpickup();
         $interval = $this->get_pickupinterval();
+        $stealable = $this->is_stealable();
 
         if ($maxpickup > 0 && $dp->get_pickupcount() >= $maxpickup) {
             return false;
-
+        } else if ($stealable === 0) {
+            return false;
         } else if ($interval > 0 && $dp->get_lastpickup() + $interval > time()) {
             return false;
         }
@@ -178,6 +188,29 @@ class drop extends persistent {
      */
     public function is_unlimited() {
         return $this->get('maxpickup') === null;
+    }
+
+    /**
+     * Is the drop stealable?
+     *
+     * @return bool
+     * added by Carly J. Born, July 2019
+     * cborn@carleton.edu
+     */
+    public function is_stealable() {
+        if ($stealable = $this->get('stealable') != NULL ) {
+            $laststeal = $this->get('laststeal');
+            $pickupinterval = $this->get('pickupinterval');
+
+            $timethreshold = $laststeal + $pickupinterval;
+error_log(json_encode($timethreshold));
+            if (($laststeal + $pickupinterval) < time()) {
+                error_log('last steal plus interval is less than time');
+                return true;
+            }
+        } else {
+            return false;
+        }
     }
 
     /**

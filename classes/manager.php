@@ -646,7 +646,7 @@ class manager {
      * @return void
      */
     public function pickup_drop($droporid, $userid = null) {
-        global $USER;
+        global $USER, $DB;
         $this->require_enabled();
 
         $userid = !empty($userid) ? $userid : $USER->id;
@@ -664,10 +664,12 @@ class manager {
         if (!is_object($drop)) {
             $drop = $this->get_drop($droporid);
         }
+        $current_holder = $DB->get_record('block_stash_user_items', array('itemid'=>$drop->get_itemid(), 'quantity' => 1));
 
         // Check that the drop is allowed: not already dropped, etc...
         $dp = drop_pickup::get_relation($drop->get_id(), $userid);
         if (!$drop->can_pickup($dp)) {
+            error_log('drop cannot be pickedup');
             throw new coding_exception('The drop cannot be picked up.');
         }
 
@@ -683,6 +685,16 @@ class manager {
         // Update the drop pickup values.
         $dp->set_pickupcount($dp->get_pickupcount() + 1);
         $dp->set_lastpickup(time());
+
+        $stealable = $DB->get_field('block_stash_drops', 'stealable', array('id'=>$drop->get_id()));
+
+        if ($stealable == 1) {
+            $DB->set_field('block_stash_drops', 'laststeal', time(), array('id'=>$drop->get_id()));
+            if (!empty($current_holder)) {
+                $DB->set_field('block_stash_user_items', 'quantity', 0, array('itemid'=>$drop->get_itemid(), 'userid' => $current_holder->userid));
+                $DB->delete_records('block_stash_drop_pickups', array('dropid'=>$drop->get_id(), 'userid'=>$current_holder->userid));
+            }
+        }
         if (!$dp->get_id()) {
             $dp->create();
         } else {
